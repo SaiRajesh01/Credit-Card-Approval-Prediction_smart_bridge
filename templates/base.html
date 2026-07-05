@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Credit Card Approval Predictor</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <div class="d-flex" id="wrapper">
+        <!-- Sidebar -->
+        <div class="bg-dark text-white border-end" id="sidebar-wrapper">
+            <div class="sidebar-heading text-center py-4 border-bottom border-secondary">
+                <i class="bi bi-credit-card-2-front fs-3 text-primary d-block mb-2"></i>
+                <span class="fw-bold tracking-wide">CREDIT CARD PORTAL</span>
+            </div>
+            <div class="list-group list-group-flush my-3">
+                <a href="{{ url_for('home') }}" class="list-group-item list-group-item-action bg-dark text-white py-3 border-0">
+                    <i class="bi bi-speedometer2 me-3 text-secondary"></i>Dashboard
+                </a>
+                <a href="{{ url_for('predict') }}" class="list-group-item list-group-item-action bg-dark text-white py-3 border-0">
+                    <i class="bi bi-file-earmark-person me-3 text-secondary"></i>Predict Approval
+                </a>
+            </div>
+            <div class="sidebar-footer text-center py-4 border-top border-secondary mt-auto text-muted fs-7">
+                <span>Active Model: XGBoost v1.0</span>
+            </div>
+        </div>
+        <!-- /#sidebar-wrapper -->
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper" class="w-100 bg-light-gray">
+            <!-- Navbar -->
+            <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom py-3 px-4 shadow-sm">
+                <div class="container-fluid">
+                    <button class="btn btn-outline-dark btn-sm" id="menu-toggle">
+                        <i class="bi bi-list"></i> Menu
+                    </button>
+                    
+                    <span class="navbar-brand ms-3 fw-semibold text-dark">Credit card Screening Engine</span>
+                    
+                    <div class="ms-auto d-flex align-items-center">
+                        <div class="dropdown">
+                            <button class="btn btn-link text-dark text-decoration-none dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-person-circle fs-5 me-2 text-primary"></i>
+                                <span class="fw-medium">Analyst Session</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                <li><a class="dropdown-item py-2" href="#"><i class="bi bi-gear me-2"></i>Settings</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item py-2 text-danger" href="#"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Main Content Container -->
+            <div class="container-fluid py-4 px-4">
+                <!-- Flash Messages -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm mb-4" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+    </div>
+    <!-- /#wrapper -->
+
+    <!-- Bootstrap 5 Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JavaScript -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

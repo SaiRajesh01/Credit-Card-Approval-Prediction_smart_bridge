@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-12 col-xl-10">
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white border-0 py-3.5 d-flex align-items-center">
+                <i class="bi bi-file-earmark-ruled text-primary fs-4 me-2"></i>
+                <h5 class="mb-0 fw-bold text-dark">Automated Credit Card Application screening</h5>
+            </div>
+            <div class="card-body p-4 p-md-5">
+                <form action="{{ url_for('predict') }}" method="POST" id="screening-form" class="needs-validation" novalidate>
+                    
+                    <!-- Section 1: Personal Details -->
+                    <div class="mb-5">
+                        <h6 class="text-uppercase tracking-wider fw-bold text-primary mb-3.5 fs-7 border-bottom pb-2">
+                            1. Personal & Demographic Profile
+                        </h6>
+                        <div class="row g-3">
+                            <div class="col-12 col-md-4">
+                                <label for="gender" class="form-label fw-medium fs-7">Applicant Gender</label>
+                                <select class="form-select" id="gender" name="gender" required>
+                                    <option value="" disabled selected>Select Gender</option>
+                                    <option value="M">Male</option>
+                                    <option value="F">Female</option>
+                                </select>
+                                <div class="invalid-feedback">Gender is required.</div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label for="birthday" class="form-label fw-medium fs-7">Date of Birth</label>
+                                <input type="date" class="form-select" id="birthday" name="birthday" required>
+                                <div class="invalid-feedback">Valid birth date is required.</div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label for="family_status" class="form-label fw-medium fs-7">Family Status</label>
+                                <select class="form-select" id="family_status" name="family_status" required>
+                                    <option value="" disabled selected>Select Status</option>
+                                    <option value="Married">Married</option>
+                                    <option value="Single / not married">Single / not married</option>
+                                    <option value="Civil marriage">Civil marriage</option>
+                                    <option value="Separated">Separated</option>
+                                    <option value="Widow">Widow</option>
+                                </select>
+                                <div class="invalid-feedback">Family status is required.</div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label for="children_count" class="form-label fw-medium fs-7">Number of Children</label>
+                                <input type="number" class="form-control" id="children_count" name="children_count" min="0" max="20" placeholder="0" required>
+                                <div class="invalid-feedback">Please enter a valid count (0-20).</div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label for="family_members_count" class="form-label fw-medium fs-7">Total Family Members</label>
+                                <input type="number" class="form-control" id="family_members_count" name="family_members_count" min="1" max="25" placeholder="1" required>
+                                <div class="invalid-feedback">Please enter a valid count (minimum 1).</div>
+                            </div>
+                            <div class="col-12 col-md-2">
+                                <label for="own_car" class="form-label fw-medium fs-7">Owns Car?</label>
+                                <select class="form-select" id="own_car" name="own_car" required>
+                                    <option value="N">No</option>
+                                    <option value="Y">Yes</option>
+                                </select>
+                            </div>
+                            <div class="col-12 col-md-2">
+                                <label for="own_realty" class="form-label fw-medium fs-7">Owns Real Estate?</label>
+                                <select class="form-select" id="own_realty" name="own_realty" required>
+                                    <option value="N">No</option>
+                                    <option value="Y">Yes</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 2: Financial & Employment Profile -->
+                    <div class="mb-5">
+                        <h6 class="text-uppercase tracking-wider fw-bold text-primary mb-3.5 fs-7 border-bottom pb-2">
+                            2. Professional & Financial Profile
+                        </h6>
+                        <div class="row g-3">
+                            <div class="col-12 col-md-4">
+                                <label for="income_total" class="form-label fw-medium fs-7">Annual Income (USD)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control" id="income_total" name="income_total" min="1000" max="10000000" placeholder="e.g. 50000" required>
+                                    <div class="invalid-feedback">Please enter a valid annual income (min $1000).</div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label for="income_type" class="form-label fw-medium fs-7">Income Category</label>
+                                <select class="form-select" id="income_type" name="income_type" required>
+                                    <option value="" disabled selected>Select Category</option>
+                                    <option value="Working">Working</option>
+                                    <option value="Commercial associate">Commercial associate</option>
+                                    <option value="Pensioner">Pensioner</option>
+                                    <option value="State servant">State servant</option>
+                                    <option value="Student">Student</option>
+                                </select>
+                                <div class="invalid-feedback">Income type is required.</div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label for="education_type" class="form-label fw-medium fs-7">Education Level</label>
+                                <select class="form-select" id="education_type" name="education_type" required>
+                                    <option value="" disabled selected>Select Level</option>
+                                    <option value="Secondary / secondary special">Secondary / secondary special</option>
+                                    <option value="Higher education">Higher education</option>
+                                    <option value="Incomplete higher">Incomplete higher</option>
+                                    <option value="Lower secondary">Lower secondary</option>
+                                    <option value="Academic degree">Academic degree</option>
+                                </select>
+                                <div class="invalid-feedback">Education level is required.</div>
+                            </div>
+                            
+                            <div class="col-12 col-md-4">
+                                <label for="is_unemployed" class="form-label fw-medium fs-7">Employment Status</label>
+                                <select class="form-select" id="is_unemployed" name="is_unemployed" required>
+                                    <option value="0">Employed / Active</option>
+                                    <option value="1">Unemployed / Pensioner</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-12 col-md-4" id="employment-start-container">
+                                <label for="employment_start" class="form-label fw-medium fs-7">Employment Start Date</label>
+                                <input type="date" class="form-select" id="employment_start" name="employment_start" required>
+                                <div class="invalid-feedback">Employment start date is required.</div>
+                            </div>
+                            
+                            <div class="col-12 col-md-4" id="occupation-container">
+                                <label for="occupation_type" class="form-label fw-medium fs-7">Occupation / Role</label>
+                                <select class="form-select" id="occupation_type" name="occupation_type" required>
+                                    <option value="Unknown" selected>Select Occupation</option>
+                                    <option value="Laborers">Laborers</option>
+                                    <option value="Core staff">Core staff</option>
+                                    <option value="Sales staff">Sales staff</option>
+                                    <option value="Managers">Managers</option>
+                                    <option value="Drivers">Drivers</option>
+                                    <option value="Medicine staff">Medicine staff</option>
+                                    <option value="Accountancy">Accountancy</option>
+                                    <option value="High skill tech staff">High skill tech staff</option>
+                                    <option value="Security staff">Security staff</option>
+                                    <option value="Cleaning staff">Cleaning staff</option>
+                                    <option value="Private service staff">Private service staff</option>
+                                    <option value="Cooking staff">Cooking staff</option>
+                                    <option value="Secretarial">Secretarial</option>
+                                    <option value="HR staff">HR staff</option>
+                                    <option value="IT staff">IT staff</option>
+                                    <option value="Waiters/barmen staff">Waiters/barmen staff</option>
+                                    <option value="Low-skill Laborers">Low-skill Laborers</option>
+                                    <option value="Realty agents">Realty agents</option>
+                                    <option value="Unknown">Unspecified / Other</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 3: Contact Details & Living Conditions -->
+                    <div class="mb-5">
+                        <h6 class="text-uppercase tracking-wider fw-bold text-primary mb-3.5 fs-7 border-bottom pb-2">
+                            3. Contact & Living Profile
+                        </h6>
+                        <div class="row g-3">
+                            <div class="col-12 col-md-6">
+                                <label for="housing_type" class="form-label fw-medium fs-7">Housing Type</label>
+                                <select class="form-select" id="housing_type" name="housing_type" required>
+                                    <option value="" disabled selected>Select Housing Type</option>
+                                    <option value="House / apartment">House / apartment</option>
+                                    <option value="With parents">With parents</option>
+                                    <option value="Municipal apartment">Municipal apartment</option>
+                                    <option value="Rented apartment">Rented apartment</option>
+                                    <option value="Office apartment">Office apartment</option>
+                                    <option value="Co-op apartment">Co-op apartment</option>
+                                </select>
+                                <div class="invalid-feedback">Housing type is required.</div>
+                            </div>
+                            
+                            <div class="col-12 col-md-6 d-flex align-items-center justify-content-between flex-wrap gap-3 mt-4 pt-2">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="work_phone" name="work_phone" value="1">
+                                    <label class="form-check-label fw-medium fs-7" for="work_phone">Has Work Phone</label>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="phone" name="phone" value="1">
+                                    <label class="form-check-label fw-medium fs-7" for="phone">Has Personal Phone</label>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="email" name="email" value="1">
+                                    <label class="form-check-label fw-medium fs-7" for="email">Has Email ID</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit Buttons -->
+                    <div class="d-flex justify-content-end gap-3 mt-4">
+                        <button type="reset" class="btn btn-light py-2.5 px-4 fw-semibold border">Reset Form</button>
+                        <button type="submit" class="btn btn-primary py-2.5 px-5 fw-semibold shadow-sm">
+                            <i class="bi bi-shield-check me-2"></i>Run Screen Analysis
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

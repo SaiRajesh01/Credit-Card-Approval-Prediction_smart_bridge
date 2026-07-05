@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center py-3">
+    <div class="col-12 col-md-8 col-xl-6">
+        
+        <!-- Result card with conditional border class -->
+        <div class="card border-0 shadow-lg text-center overflow-hidden mb-4">
+            
+            <!-- Dynamic Color Top Border Accent -->
+            {% if prediction == 'APPROVED' %}
+                <div class="header-accent-success py-1"></div>
+            {% else %}
+                <div class="header-accent-danger py-1"></div>
+            {% endif %}
+
+            <div class="card-body p-5">
+                
+                <!-- Icon Visual Alert -->
+                <div class="mb-4">
+                    {% if prediction == 'APPROVED' %}
+                        <div class="icon-shape bg-success-light text-success mx-auto rounded-circle d-flex align-items-center justify-content-center" style="width: 100px; height: 100px;">
+                            <i class="bi bi-shield-fill-check fs-1"></i>
+                        </div>
+                    {% else %}
+                        <div class="icon-shape bg-danger-light text-danger mx-auto rounded-circle d-flex align-items-center justify-content-center" style="width: 100px; height: 100px;">
+                            <i class="bi bi-shield-fill-x fs-1"></i>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Title & Decision Display -->
+                <h5 class="text-muted fw-semibold mb-1 fs-7">Decision Outcome</h5>
+                
+                {% if prediction == 'APPROVED' %}
+                    <h1 class="display-5 fw-bold text-success mb-2">APPLICATION APPROVED</h1>
+                    <p class="text-muted fs-6 mb-4">The applicant meets the credit eligibility threshold.</p>
+                {% else %}
+                    <h1 class="display-5 fw-bold text-danger mb-2">APPLICATION REJECTED</h1>
+                    <p class="text-muted fs-6 mb-4">The applicant does not meet the credit eligibility threshold.</p>
+                {% endif %}
+
+                <hr class="my-4">
+
+                <!-- Details & Metrics Grid -->
+                <div class="row text-center mb-4">
+                    <div class="col-6 border-end">
+                        <span class="d-block text-muted fs-7 mb-1">Applicant Reference</span>
+                        <span class="text-dark fw-bold fs-5">#{{ applicant_id }}</span>
+                    </div>
+                    <div class="col-6">
+                        <span class="d-block text-muted fs-7 mb-1">Total Annual Income</span>
+                        <span class="text-dark fw-bold fs-5">${{ income }}</span>
+                    </div>
+                </div>
+
+                <!-- Confidence Gauge/Bar -->
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between mb-1.5 fs-7">
+                        <span class="text-muted">Prediction Confidence</span>
+                        <span class="fw-bold text-dark">{{ confidence }}%</span>
+                    </div>
+                    <div class="progress" style="height: 10px;">
+                        {% if prediction == 'APPROVED' %}
+                            <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="{{ confidence }}" aria-valuemin="0" aria-valuemax="100"></div>
+                        {% else %}
+                            <div class="progress-bar bg-danger progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="{{ confidence }}" aria-valuemin="0" aria-valuemax="100"></div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="d-grid gap-2.5 mt-5">
+                    <a href="{{ url_for('predict') }}" class="btn btn-primary py-2.5 fw-semibold shadow-sm">
+                        <i class="bi bi-arrow-repeat me-2"></i>Screen Another Application
+                    </a>
+                    <a href="{{ url_for('home') }}" class="btn btn-light py-2.5 fw-semibold border">
+                        <i class="bi bi-house me-2"></i>Return to Dashboard
+                    </a>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

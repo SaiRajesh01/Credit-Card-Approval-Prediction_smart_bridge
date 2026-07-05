@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: credit_card_predictor
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+      - SECRET_KEY=prod-secret-key-change-in-compose
+    restart: unless-stopped
+    volumes:
+      # Optional: bind mount database to persist data outside container
+      - db_data:/app/credit_card.db
+
+volumes:
+  db_data:

@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row g-4 mb-4">
+    <!-- Stat Card 1 -->
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card border-0 shadow-sm card-hover h-100">
+            <div class="card-body p-4 d-flex align-items-center">
+                <div class="rounded-circle bg-primary-light p-3 me-3 text-primary">
+                    <i class="bi bi-people fs-4"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted mb-1 fw-medium fs-7">Total Screenings</h6>
+                    <h3 class="mb-0 fw-bold text-dark">{{ stats.total_predictions }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Stat Card 2 -->
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card border-0 shadow-sm card-hover h-100">
+            <div class="card-body p-4 d-flex align-items-center">
+                <div class="rounded-circle bg-success-light p-3 me-3 text-success">
+                    <i class="bi bi-check-circle fs-4"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted mb-1 fw-medium fs-7">Approval Rate</h6>
+                    <h3 class="mb-0 fw-bold text-dark">{{ stats.approval_rate }}%</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Stat Card 3 -->
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card border-0 shadow-sm card-hover h-100">
+            <div class="card-body p-4 d-flex align-items-center">
+                <div class="rounded-circle bg-danger-light p-3 me-3 text-danger">
+                    <i class="bi bi-x-circle fs-4"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted mb-1 fw-medium fs-7">Rejection Rate</h6>
+                    <h3 class="mb-0 fw-bold text-dark">{{ stats.rejection_rate }}%</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Stat Card 4 -->
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card border-0 shadow-sm card-hover h-100">
+            <div class="card-body p-4 d-flex align-items-center">
+                <div class="rounded-circle bg-warning-light p-3 me-3 text-warning">
+                    <i class="bi bi-cpu fs-4"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted mb-1 fw-medium fs-7">Model F1-Score</h6>
+                    <h3 class="mb-0 fw-bold text-dark">{{ stats.model_f1 }}%</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Active Model Details -->
+    <div class="col-12 col-lg-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-0 py-3">
+                <h5 class="mb-0 fw-bold text-dark">Decision Engine</h5>
+            </div>
+            <div class="card-body p-4 text-center">
+                <div class="mb-4">
+                    <i class="bi bi-shield-check text-primary fs-1"></i>
+                </div>
+                <h4 class="fw-bold text-dark">{{ stats.model_name }}</h4>
+                <p class="text-muted mb-4 fs-7">This machine learning model classifies credit card applicants based on historical risk patterns.</p>
+                <hr>
+                <div class="row text-center mt-3">
+                    <div class="col-6 border-end">
+                        <span class="d-block text-muted fs-7 mb-1">Target Metric</span>
+                        <span class="badge bg-success py-2 px-3 fw-semibold">F1 Optimization</span>
+                    </div>
+                    <div class="col-6">
+                        <span class="d-block text-muted fs-7 mb-1">Version</span>
+                        <span class="text-dark fw-bold">v1.0.0</span>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <a href="{{ url_for('predict') }}" class="btn btn-primary w-100 py-2.5 fw-semibold shadow-sm">
+                        <i class="bi bi-plus-circle me-2"></i>New Screening
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Screenings -->
+    <div class="col-12 col-lg-8">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold text-dark">Recent Application Screenings</h5>
+                <span class="badge bg-light text-dark border py-1.5 px-3 fs-7">Live Logs</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0 table-hover">
+                        <thead class="table-light fs-7 text-uppercase tracking-wider">
+                            <tr>
+                                <th class="py-3 px-4">Applicant ID</th>
+                                <th class="py-3">Income</th>
+                                <th class="py-3">Date Processed</th>
+                                <th class="py-3 text-center">Decision</th>
+                                <th class="py-3 text-center">Confidence</th>
+                            </tr>
+                        </thead>
+                        <tbody class="fs-7">
+                            {% if stats.recent_predictions %}
+                                {% for pred, app in stats.recent_predictions %}
+                                <tr>
+                                    <td class="py-3 px-4 fw-semibold text-primary">#{{ app.id }}</td>
+                                    <td class="py-3">${{ "{:,.2f}".format(app.income_total) }}</td>
+                                    <td class="py-3 text-muted">{{ pred.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                                    <td class="py-3 text-center">
+                                        {% if pred.prediction == 1 %}
+                                            <span class="badge bg-success-light text-success px-3 py-1.5 rounded-pill fw-semibold">APPROVED</span>
+                                        {% else %}
+                                            <span class="badge bg-danger-light text-danger px-3 py-1.5 rounded-pill fw-semibold">REJECTED</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="py-3 text-center fw-medium text-dark">{{ "{:.2f}".format(pred.confidence_score * 100) }}%</td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-5 text-muted">
+                                        <i class="bi bi-database-exclamation fs-2 d-block mb-2 text-secondary"></i>
+                                        No applications processed yet.
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

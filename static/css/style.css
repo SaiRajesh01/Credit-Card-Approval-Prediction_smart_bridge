@@ -1,0 +1,226 @@
+/* Credit Card Approval Predictor Theme - Premium Modern Design */
+
+:root {
+    --primary-color: #4f46e5;       /* Indigo 600 */
+    --primary-hover: #4338ca;       /* Indigo 700 */
+    --primary-light: rgba(79, 70, 229, 0.1);
+    
+    --success-color: #10b981;       /* Emerald 500 */
+    --success-light: #ecfdf5;       /* Emerald 50 */
+    
+    --danger-color: #f43f5e;        /* Rose 500 */
+    --danger-light: #fff1f2;        /* Rose 50 */
+    
+    --warning-color: #f59e0b;       /* Amber 500 */
+    --warning-light: #fef3c7;       /* Amber 50 */
+    
+    --dark-bg: #0f172a;             /* Slate 900 */
+    --sidebar-border: #1e293b;      /* Slate 800 */
+    --body-bg: #f8fafc;             /* Slate 50 */
+    --border-color: #e2e8f0;        /* Slate 200 */
+    --text-muted: #64748b;          /* Slate 500 */
+    
+    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    --card-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--body-bg);
+    color: #1e293b;
+    overflow-x: hidden;
+}
+
+/* ==============================================================================
+   LAYOUT & WRAPPERS
+   ============================================================================== */
+
+#wrapper {
+    overflow-x: hidden;
+}
+
+#sidebar-wrapper {
+    min-height: 100vh;
+    width: 280px;
+    margin-left: -280px;
+    background-color: var(--dark-bg) !important;
+    border-right: 1px solid var(--sidebar-border) !important;
+    transition: margin 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column;
+}
+
+#sidebar-wrapper .sidebar-heading {
+    padding: 1.5rem 1rem;
+    font-size: 1.1rem;
+    letter-spacing: 0.05em;
+}
+
+#sidebar-wrapper .list-group-item {
+    background-color: transparent !important;
+    border: none;
+    color: #94a3b8 !important; /* Slate 400 */
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border-left: 4px solid transparent;
+}
+
+#sidebar-wrapper .list-group-item:hover,
+#sidebar-wrapper .list-group-item.active {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    color: #f8fafc !important;
+    border-left: 4px solid var(--primary-color);
+}
+
+#sidebar-wrapper .list-group-item i {
+    font-size: 1.1rem;
+    transition: color 0.2s ease;
+}
+
+#sidebar-wrapper .list-group-item:hover i,
+#sidebar-wrapper .list-group-item.active i {
+    color: var(--primary-color) !important;
+}
+
+#page-content-wrapper {
+    min-width: 100vw;
+}
+
+/* Sidebar Toggle State on Desktop */
+@media (min-width: 768px) {
+    #sidebar-wrapper {
+        margin-left: 0;
+    }
+    #page-content-wrapper {
+        min-width: 0;
+        width: 100%;
+    }
+    #wrapper.toggled #sidebar-wrapper {
+        margin-left: -280px;
+    }
+}
+
+/* ==============================================================================
+   COMPONENTS & REUSABLE CLASSS
+   ============================================================================== */
+
+/* Premium Card Design */
+.card {
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--card-shadow-hover);
+}
+
+.card-header {
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Colored Light Backgrounds for Stats */
+.bg-primary-light {
+    background-color: var(--primary-light);
+}
+
+.bg-success-light {
+    background-color: var(--success-light);
+}
+
+.bg-danger-light {
+    background-color: var(--danger-light);
+}
+
+.bg-warning-light {
+    background-color: var(--warning-light);
+}
+
+/* Custom Gradients for Screen Results */
+.header-accent-success {
+    background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+}
+
+.header-accent-danger {
+    background: linear-gradient(90deg, #f43f5e 0%, #e11d48 100%);
+}
+
+/* Form Styles */
+.form-label {
+    color: #334155; /* Slate 700 */
+    margin-bottom: 0.5rem;
+}
+
+.form-control, .form-select {
+    padding: 0.625rem 0.9rem;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1; /* Slate 300 */
+    font-size: 0.925rem;
+    transition: all 0.2s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.15);
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    border-radius: 8px;
+    padding: 0.6rem 1.5rem;
+    transition: all 0.2s ease;
+}
+
+.btn-primary:hover, .btn-primary:focus {
+    background-color: var(--primary-hover);
+    border-color: var(--primary-hover);
+}
+
+.btn-light {
+    border-radius: 8px;
+    padding: 0.6rem 1.5rem;
+}
+
+/* Table Enhancements */
+.table th {
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.table td {
+    color: #334155; /* Slate 700 */
+}
+
+/* Utility Helpers */
+.tracking-wide {
+    letter-spacing: 0.05em;
+}
+
+.fs-7 {
+    font-size: 0.85rem !important;
+}
+
+.fs-8 {
+    font-size: 0.75rem !important;
+}
+
+.py-2\.5 {
+    padding-top: 0.625rem !important;
+    padding-bottom: 0.625rem !important;
+}
+
+.py-3\.5 {
+    padding-top: 0.875rem !important;
+    padding-bottom: 0.875rem !important;
+}
+
+/* Input Fields Visibility Tweaks */
+#employment-start-container {
+    transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
