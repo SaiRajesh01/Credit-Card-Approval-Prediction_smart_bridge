@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const employmentStartInput = document.getElementById("employment_start");
         const occupationSelect = document.getElementById("occupation_type");
 
-        function toggleEmploymentFields() {
+    function toggleEmploymentFields() {
             const isUnemployed = isUnemployedSelect.value === "1";
             
             if (isUnemployed) {
@@ -39,16 +39,19 @@ document.addEventListener("DOMContentLoaded", function () {
                 employmentStartInput.required = false;
                 employmentStartInput.value = ""; // Clear input value
                 
-                // Reset and default occupation to Unknown (Unspecified)
+                // Set occupation to Unknown and visually grey it out
+                // Keep it enabled so the value is submitted with the form
                 occupationSelect.value = "Unknown";
-                occupationSelect.disabled = true;
+                occupationSelect.style.opacity = "0.6";
+                occupationSelect.style.pointerEvents = "none";
             } else {
                 // If Employed: show & enable employment start date
                 employmentStartContainer.style.display = "block";
                 employmentStartInput.required = true;
                 
-                // Enable occupation dropdown select
-                occupationSelect.disabled = false;
+                // Re-enable occupation dropdown select
+                occupationSelect.style.opacity = "1";
+                occupationSelect.style.pointerEvents = "auto";
             }
         }
 

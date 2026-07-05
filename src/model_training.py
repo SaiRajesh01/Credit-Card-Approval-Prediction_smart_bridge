@@ -97,7 +97,7 @@ class ModelTrainer:
         rf = RandomForestClassifier(
             random_state=self.random_state,
             n_estimators=300,
-            max_depth=None,
+            max_depth=10,
             min_samples_split=5,
             class_weight="balanced",
             n_jobs=-1

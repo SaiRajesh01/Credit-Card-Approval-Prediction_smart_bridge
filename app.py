@@ -1,7 +1,7 @@
 import logging
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, Any, List
 
@@ -43,7 +43,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     
     # Relationships
     applicants = db.relationship('ApplicantDetail', backref='analyst', lazy=True)
@@ -86,7 +86,7 @@ class ApplicantDetail(db.Model):
     # Occupation and Family details
     occupation_type = db.Column(db.String(50), nullable=False)
     family_members_count = db.Column(db.Float, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     
     # Relationships
     credit_histories = db.relationship('CreditHistory', backref='applicant', lazy=True)
@@ -145,7 +145,7 @@ class ApprovalPrediction(db.Model):
     model_id = db.Column(db.Integer, db.ForeignKey('ml_models.id'), nullable=False)
     prediction = db.Column(db.Integer, nullable=False)  # 1 = Approved, 0 = Rejected
     confidence_score = db.Column(db.Float, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -312,7 +312,7 @@ def predict():
             'FLAG_WORK_PHONE': int(form.get('work_phone', 0)),
             'FLAG_PHONE': int(form.get('phone', 0)),
             'FLAG_EMAIL': int(form.get('email', 0)),
-            'OCCUPATION_TYPE': form.get('occupation_type'),
+            'OCCUPATION_TYPE': form.get('occupation_type') or 'Unknown',
             'CNT_FAM_MEMBERS': float(form.get('family_members_count', 1))
         }
         
