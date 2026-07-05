@@ -93,4 +93,3 @@ Thumbs.db
 
 # Project-specific ignored files
 data/final_dataset.csv
-saved_models/*.pkl

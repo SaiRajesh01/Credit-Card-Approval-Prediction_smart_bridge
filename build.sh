@@ -6,9 +6,7 @@ set -o errexit
 pip install --upgrade pip
 pip install -r requirements.txt
 
-# Run Machine Learning Pipeline to generate model artifacts (.pkl files)
-python src/data_preprocessing.py
-python src/feature_engineering.py
+# Run ML pipeline to generate model files (.pkl)
 python src/prediction.py
 
 # Initialize database
