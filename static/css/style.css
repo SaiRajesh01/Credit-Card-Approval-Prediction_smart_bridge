@@ -103,6 +103,11 @@ body {
     min-width: 100vw;
 }
 
+.navbar-custom {
+    background-color: var(--body-bg) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+}
+
 /* Sidebar Toggle State on Desktop */
 @media (min-width: 768px) {
     #sidebar-wrapper {
