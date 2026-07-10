@@ -109,24 +109,24 @@
                                 <th class="py-3">Income</th>
                                 <th class="py-3">Date Processed</th>
                                 <th class="py-3 text-center">Decision</th>
-                                <th class="py-3 text-center">Confidence</th>
+                                <th class="py-3 text-center">Risk</th>
                             </tr>
                         </thead>
                         <tbody class="fs-7">
                             {% if stats.recent_predictions %}
                                 {% for pred, app in stats.recent_predictions %}
                                 <tr>
-                                    <td class="py-3 px-4 fw-semibold text-primary">#{{ app.id }}</td>
-                                    <td class="py-3">${{ "{:,.2f}".format(app.income_total) }}</td>
-                                    <td class="py-3 text-muted">{{ pred.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                                    <td class="py-3 px-4 fw-semibold text-primary">#{{ app.ApplicantID }}</td>
+                                    <td class="py-3">${{ "{:,.2f}".format(app.IncomeTotal) }}</td>
+                                    <td class="py-3 text-muted">{{ pred.PredictionDate.strftime('%Y-%m-%d %H:%M:%S') }}</td>
                                     <td class="py-3 text-center">
-                                        {% if pred.prediction == 1 %}
+                                        {% if pred.ApprovalResult == 'Approved' %}
                                             <span class="badge bg-success-light text-success px-3 py-1.5 rounded-pill fw-semibold">APPROVED</span>
                                         {% else %}
                                             <span class="badge bg-danger-light text-danger px-3 py-1.5 rounded-pill fw-semibold">REJECTED</span>
                                         {% endif %}
                                     </td>
-                                    <td class="py-3 text-center fw-medium text-dark">{{ "{:.2f}".format(pred.confidence_score * 100) }}%</td>
+                                    <td class="py-3 text-center fw-medium text-dark">{{ pred.RiskCategory }}</td>
                                 </tr>
                                 {% endfor %}
                             {% else %}

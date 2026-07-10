@@ -272,3 +272,44 @@ body {
 .gap-2\.5 {
     gap: 0.625rem !important;
 }
+
+/* ==============================================================================
+   AUTH PAGES (Login / Register)
+   ============================================================================== */
+
+.auth-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+    padding: 2rem 1rem;
+}
+
+.auth-container {
+    width: 100%;
+    max-width: 440px;
+}
+
+.auth-card {
+    border-radius: 16px !important;
+    overflow: hidden;
+}
+
+.auth-icon-wrapper {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: var(--primary-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header-accent-primary {
+    background: linear-gradient(90deg, #4f46e5 0%, #6366f1 50%, #818cf8 100%);
+}
+
+.fs-8 {
+    font-size: 0.75rem !important;
+}

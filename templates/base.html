@@ -30,8 +30,23 @@
                     <i class="bi bi-file-earmark-person me-3 text-secondary"></i>Predict Approval
                 </a>
             </div>
-            <div class="sidebar-footer text-center py-4 border-top border-secondary mt-auto text-muted fs-7">
-                <span>Active Model: XGBoost v1.0</span>
+
+            <!-- User Info & Logout at Bottom -->
+            <div class="sidebar-footer text-center py-4 border-top border-secondary mt-auto">
+                {% if current_user.is_authenticated %}
+                    <div class="mb-2">
+                        <span class="badge bg-primary bg-opacity-25 text-primary px-3 py-1 rounded-pill fs-8">
+                            <i class="bi bi-person-circle me-1"></i>{{ current_user.Name }}
+                        </span>
+                    </div>
+                    <a href="{{ url_for('logout') }}" class="btn btn-outline-danger btn-sm px-3 py-1 rounded-pill fs-8">
+                        <i class="bi bi-box-arrow-right me-1"></i>Sign Out
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="btn btn-outline-primary btn-sm px-3 py-1 rounded-pill fs-8">
+                        <i class="bi bi-box-arrow-in-right me-1"></i>Sign In
+                    </a>
+                {% endif %}
             </div>
         </div>
         <!-- /#sidebar-wrapper -->
@@ -47,7 +62,12 @@
                     
                     <span class="navbar-brand ms-3 fw-semibold text-dark">Credit card Screening Engine</span>
                     
-                    <div class="ms-auto d-flex align-items-center">
+                    <div class="ms-auto d-flex align-items-center gap-3">
+                        {% if current_user.is_authenticated %}
+                            <span class="text-muted fs-7 d-none d-md-inline">
+                                <i class="bi bi-person-fill me-1"></i>{{ current_user.Name }} ({{ current_user.Role }})
+                            </span>
+                        {% endif %}
                         <div class="d-flex align-items-center text-muted fs-7 border rounded-pill px-3 py-1.5 bg-light">
                             <i class="bi bi-circle-fill text-success small me-2" style="font-size: 0.5rem;"></i>
                             <span class="fw-medium">System Online</span>

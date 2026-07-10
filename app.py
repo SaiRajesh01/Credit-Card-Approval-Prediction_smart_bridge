@@ -7,7 +7,8 @@ from typing import Dict, Any, List
 
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from werkzeug.security import generate_password_hash
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
 
 # Configure logging
 logging.basicConfig(
@@ -32,6 +33,12 @@ app.config.from_object(config)
 # Initialize SQLAlchemy Database
 db = SQLAlchemy(app)
 
+# Initialize Flask-Login
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'
+login_manager.login_message = 'Please log in to access this page.'
+login_manager.login_message_category = 'info'
+
 # ==============================================================================
 # DATABASE MODELS (MAPPED FROM ER DIAGRAM)
 # ==============================================================================
@@ -43,7 +50,7 @@ db = SQLAlchemy(app)
 #   ML_Model (1) ──> (N) Approval_Prediction
 # ==============================================================================
 
-class User(db.Model):
+class User(UserMixin, db.Model):
     """Users entity – represents system users (admin/analyst)."""
     __tablename__ = 'Users'
 
@@ -56,6 +63,10 @@ class User(db.Model):
     # Relationship: Users (1) ──> (N) Applicant_Details
     applicants = db.relationship('ApplicantDetail', backref='user', lazy=True)
 
+    def get_id(self):
+        """Override for Flask-Login – returns the UserID as a string."""
+        return str(self.UserID)
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
 
@@ -63,17 +74,34 @@ class User(db.Model):
         return f"<User UserID={self.UserID} Name={self.Name}>"
 
 
+@login_manager.user_loader
+def load_user(user_id):
+    """Flask-Login callback to load a user from the database by ID."""
+    return db.session.get(User, int(user_id))
+
+
 class ApplicantDetail(db.Model):
     """Applicant_Details entity – stores applicant personal & financial profile."""
     __tablename__ = 'Applicant_Details'
 
-    ApplicantID    = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    UserID         = db.Column(db.Integer, db.ForeignKey('Users.UserID'), nullable=False)
-    IncomeType     = db.Column(db.String(50), nullable=False)
-    EducationType  = db.Column(db.String(100), nullable=False)
-    FamilyStatus   = db.Column(db.String(50), nullable=False)
-    HousingType    = db.Column(db.String(50), nullable=False)
-    EmploymentDays = db.Column(db.Integer, nullable=False)
+    ApplicantID      = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    UserID           = db.Column(db.Integer, db.ForeignKey('Users.UserID'), nullable=False)
+    Gender           = db.Column(db.String(10), nullable=False, default='Unknown')
+    OwnCar           = db.Column(db.String(5), nullable=False, default='N')
+    OwnRealty        = db.Column(db.String(5), nullable=False, default='N')
+    ChildrenCount    = db.Column(db.Integer, nullable=False, default=0)
+    IncomeTotal      = db.Column(db.Float, nullable=False, default=0.0)
+    IncomeType       = db.Column(db.String(50), nullable=False)
+    EducationType    = db.Column(db.String(100), nullable=False)
+    FamilyStatus     = db.Column(db.String(50), nullable=False)
+    HousingType      = db.Column(db.String(50), nullable=False)
+    DaysBirth        = db.Column(db.Integer, nullable=False, default=0)
+    EmploymentDays   = db.Column(db.Integer, nullable=False)
+    WorkPhone        = db.Column(db.Integer, nullable=False, default=0)
+    Phone            = db.Column(db.Integer, nullable=False, default=0)
+    EmailFlag        = db.Column(db.Integer, nullable=False, default=0)
+    OccupationType   = db.Column(db.String(100), nullable=False, default='Unknown')
+    FamilyMembersCount = db.Column(db.Float, nullable=False, default=1.0)
 
     # Relationship: Applicant_Details (1) ──> (N) Credit_History
     credit_histories = db.relationship('CreditHistory', backref='applicant', lazy=True)
@@ -165,7 +193,6 @@ def initialize_database() -> None:
         # Seed default users if none exist
         if User.query.first() is None:
             logger.info("Seeding default user accounts...")
-            hashed_pwd = generate_password_hash("analyst2026")
             admin = User(
                 Name="Admin",
                 Email="admin@loanpredict.com",
@@ -175,7 +202,7 @@ def initialize_database() -> None:
             analyst = User(
                 Name="Analyst",
                 Email="analyst@loanpredict.com",
-                Password=hashed_pwd,
+                Password=generate_password_hash("analyst2026"),
                 Role="analyst"
             )
             db.session.add_all([admin, analyst])
@@ -207,10 +234,102 @@ def initialize_database() -> None:
             db.session.commit()
 
 # ==============================================================================
+# AUTHENTICATION ROUTES
+# ==============================================================================
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    """Serves the login page and handles user authentication."""
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+
+    if request.method == 'POST':
+        email = request.form.get('email', '').strip()
+        password = request.form.get('password', '')
+
+        if not email or not password:
+            flash('Please fill in all fields.', 'warning')
+            return redirect(url_for('login'))
+
+        user = User.query.filter_by(Email=email).first()
+
+        if user and check_password_hash(user.Password, password):
+            login_user(user)
+            logger.info(f"User '{user.Name}' logged in successfully.")
+            flash(f'Welcome back, {user.Name}!', 'success')
+            next_page = request.args.get('next')
+            return redirect(next_page or url_for('home'))
+        else:
+            flash('Invalid email or password. Please try again.', 'danger')
+            return redirect(url_for('login'))
+
+    return render_template('login.html')
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    """Serves the registration page and creates new user accounts."""
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+
+    if request.method == 'POST':
+        name = request.form.get('name', '').strip()
+        email = request.form.get('email', '').strip()
+        password = request.form.get('password', '')
+        confirm_password = request.form.get('confirm_password', '')
+
+        # Validation
+        if not name or not email or not password:
+            flash('All fields are required.', 'warning')
+            return redirect(url_for('register'))
+
+        if password != confirm_password:
+            flash('Passwords do not match.', 'danger')
+            return redirect(url_for('register'))
+
+        if len(password) < 6:
+            flash('Password must be at least 6 characters long.', 'warning')
+            return redirect(url_for('register'))
+
+        # Check if user already exists
+        existing_user = User.query.filter_by(Email=email).first()
+        if existing_user:
+            flash('An account with this email already exists.', 'danger')
+            return redirect(url_for('register'))
+
+        # Create new user
+        new_user = User(
+            Name=name,
+            Email=email,
+            Password=generate_password_hash(password),
+            Role='analyst'
+        )
+        db.session.add(new_user)
+        db.session.commit()
+
+        logger.info(f"New user '{name}' registered with email '{email}'.")
+        flash('Account created successfully! Please log in.', 'success')
+        return redirect(url_for('login'))
+
+    return render_template('register.html')
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    """Logs the user out and redirects to login page."""
+    logger.info(f"User '{current_user.Name}' logged out.")
+    logout_user()
+    flash('You have been logged out.', 'info')
+    return redirect(url_for('login'))
+
+
+# ==============================================================================
 # WEB ROUTING
 # ==============================================================================
 
 @app.route('/')
+@login_required
 def home():
     """Renders the dashboard landing page."""
     try:
@@ -230,7 +349,7 @@ def home():
         model_name = active_model.ModelName if active_model else "N/A"
         model_accuracy = active_model.Accuracy if active_model else 0.0
         
-        # Recent prediction logs
+        # Recent prediction logs with full applicant and prediction data
         recent_predictions = (
             db.session.query(ApprovalPrediction, ApplicantDetail)
             .join(ApplicantDetail, ApprovalPrediction.ApplicantID == ApplicantDetail.ApplicantID)
@@ -246,6 +365,7 @@ def home():
             "rejection_rate": round(rejection_rate, 2),
             "model_name": model_name,
             "model_accuracy": round(model_accuracy * 100, 2),
+            "model_f1": round(model_accuracy * 100, 2),
             "recent_predictions": recent_predictions
         }
         
@@ -256,6 +376,7 @@ def home():
 
 
 @app.route('/predict', methods=['GET', 'POST'])
+@login_required
 def predict():
     """Serves the applicant prediction form and processes predictions."""
     if request.method == 'GET':
@@ -264,12 +385,6 @@ def predict():
     try:
         # 1. Fetch form inputs
         form = request.form
-        
-        # Get default analyst user to link applicant
-        analyst = User.query.filter_by(Role="analyst").first()
-        if not analyst:
-            flash("User authentication error.", "danger")
-            return redirect(url_for('predict'))
             
         # Parse age from birthday
         birthday_str = form.get('birthday')
@@ -310,14 +425,25 @@ def predict():
             'CNT_FAM_MEMBERS': float(form.get('family_members_count', 1))
         }
         
-        # 2. Write applicant profile records to DB (mapped to ER diagram columns)
+        # 2. Write applicant profile records to DB with ALL form fields
         applicant = ApplicantDetail(
-            UserID=analyst.UserID,
+            UserID=current_user.UserID,
+            Gender=applicant_data_dict['CODE_GENDER'],
+            OwnCar=applicant_data_dict['FLAG_OWN_CAR'],
+            OwnRealty=applicant_data_dict['FLAG_OWN_REALTY'],
+            ChildrenCount=applicant_data_dict['CNT_CHILDREN'],
+            IncomeTotal=applicant_data_dict['AMT_INCOME_TOTAL'],
             IncomeType=applicant_data_dict['NAME_INCOME_TYPE'],
             EducationType=applicant_data_dict['NAME_EDUCATION_TYPE'],
             FamilyStatus=applicant_data_dict['NAME_FAMILY_STATUS'],
             HousingType=applicant_data_dict['NAME_HOUSING_TYPE'],
-            EmploymentDays=days_employed
+            DaysBirth=days_birth,
+            EmploymentDays=days_employed,
+            WorkPhone=applicant_data_dict['FLAG_WORK_PHONE'],
+            Phone=applicant_data_dict['FLAG_PHONE'],
+            EmailFlag=applicant_data_dict['FLAG_EMAIL'],
+            OccupationType=applicant_data_dict['OCCUPATION_TYPE'],
+            FamilyMembersCount=applicant_data_dict['CNT_FAM_MEMBERS']
         )
         db.session.add(applicant)
         db.session.commit()
@@ -358,6 +484,8 @@ def predict():
         )
         db.session.add(prediction_record)
         db.session.commit()
+        
+        logger.info(f"Prediction saved: Applicant #{applicant.ApplicantID} -> {prediction_text} (Confidence: {confidence:.4f})")
         
         # Render the result template with details
         confidence_percent = round(confidence * 100, 2)
