@@ -219,5 +219,7 @@ python app.py
   - **Username**: `analyst`
   - **Password**: `analyst2026`
 =======
+# Authors
+
 # Credit-Card-Approval-Prediction_smart_bridge
 >>>>>>> 3be9025f1aa6f48a05813730459fc869dbcffa22
