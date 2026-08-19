@@ -220,6 +220,6 @@ python app.py
   - **Password**: `analyst2026`
 =======
 # Authors
-
+  **Mutte Sai Rajesh** , **Panchumarthi Satya** , **Adina narendra** , **Kondamadugula Ajay**
 # Credit-Card-Approval-Prediction_smart_bridge
 >>>>>>> 3be9025f1aa6f48a05813730459fc869dbcffa22
